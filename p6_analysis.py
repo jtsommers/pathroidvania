@@ -34,5 +34,18 @@ def analyze(design):
 	ANALYSIS['points'] = points
 
 def inspect((i,j), draw_line):
-	# TODO: use ANALYSIS and (i,j) draw some lines
-	raise NotImplementedError
+	inspection_point = (i,j)
+	prev = ANALYSIS['prev']
+	points = ANALYSIS['points']
+
+	for state in points[inspection_point]:
+		# Use this state as the basis for a line back to the start
+		position, used_abilities = state
+		current_state = state
+		previous_state = prev[current_state]
+		while previous_state:
+			src, abilities = current_state
+			dst, unused = previous_state
+			draw_line(src, dst, used_abilities, used_abilities)
+			current_state = previous_state
+			previous_state = prev[current_state]
