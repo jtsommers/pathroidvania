@@ -68,6 +68,14 @@ def display_design_on_canvas(canvas, design):
     coords = rect_coords[item]
     elements[coords] = next_element(elements[coords])
     display_design_on_canvas(canvas, design)
+    # print_map()
+
+  def print_map():
+    char_table = [[elements[x,y] for x in range(width)] for y in range(height)]
+    for (i,j),k in specials.items():
+      char_table[j][i] = str(k)
+    for line in char_table:
+      print ' '.join(line)
 
   def enter(event):
     canvas.delete('inspection')
