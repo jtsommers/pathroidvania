@@ -1,35 +1,37 @@
 from p6_game import Simulator
 from collections import defaultdict
 
+try:
+	import Queue as Q  # ver. < 3.0
+except ImportError:
+	import queue as Q
+
+import astar
+
 ANALYSIS = {}
 
 def analyze(design):
 	sim = Simulator(design)
-	# Dictionary saving out the previous state mapping
-	prev = {}
-	# Dictionary saving out the position to state mappings
-	points = defaultdict(lambda: [])
 
 	# Setup for the start state
 	init = sim.get_initial_state()
-	position, abilities = init
+	
+	# Define graph traversal
+	all_moves = sim.get_moves()
+	def graph(state):
+		for move in all_moves:
+			next_state = sim.get_next_state(state, move)
+			# Make sure the mantis didn't die
+			if next_state:
+				yield (move, next_state, 1)
 
-	prev[init] = None;
-	points[position].append(init)
+	# prev = dictionary saving out the previous state mapping
+	# cost = dictionary saving out cost to get to a state
+	# points = dictionary saving out the position to state mappings
+	prev, cost, points = astar.single_source_search(graph, init)
 
-	### Sample usage of state traversal
-	# moves = sim.get_moves()
-	# next_state = sim.get_next_state(init, moves[0])
-
-	# position, abilities = next_state # or None if character dies
-	# i, j = position
-
-
-
-	# TODO: fill in this function, populating the ANALYSIS dict
 	ANALYSIS['prev'] = prev
 	ANALYSIS['points'] = points
-	raise NotImplementedError
 
 def inspect((i,j), draw_line):
 	# TODO: use ANALYSIS and (i,j) draw some lines
